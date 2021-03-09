@@ -18,6 +18,7 @@ import {
   InvokeApiResult,
   Manifest,
 } from "@web3api/core-js";
+import initTracer, { Tracer, Span } from "@web3api/logger";
 
 export interface ClientConfig {
   redirects: UriRedirect[];
@@ -30,15 +31,26 @@ export class Web3ApiClient implements Client {
   // A => B => C, then the cache should have A => C, and B => C.
   private _apiCache: ApiCache = new Map<string, Api>();
 
+  private _logger: Tracer;
+  private _span: Span;
+
   constructor(
     private _config: ClientConfig = {
       redirects: [],
-    }
+    },
+    private _showLogging: boolean = false
   ) {
     const { redirects } = this._config;
 
     // Add all default redirects (IPFS, ETH, ENS)
     redirects.push(...getDefaultRedirects());
+
+    if (this._showLogging) {
+      this._logger = initTracer("web3api-client");
+      this._span = this._logger.startSpan("Web3ApiClient");
+
+      this._span.log({ event: "created" });
+    }
   }
 
   public redirects(): readonly UriRedirect[] {
@@ -159,5 +171,13 @@ export class Web3ApiClient implements Client {
     }
 
     return api;
+  }
+
+  public enableLogging(): void {
+    this._quiet = false;
+  }
+
+  public disableLogging(): void {
+    this._quiet = true;
   }
 }
