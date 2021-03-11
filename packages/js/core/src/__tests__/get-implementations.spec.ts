@@ -10,26 +10,26 @@ describe("getImplementations", () => {
   it("works in the typical case", () => {
     const implementations: UriRedirect[] = [
       {
-        from: new Uri("authority/some-abstract-interface"),
-        to: new Uri("one/1"),
+        from: "authority/some-abstract-interface",
+        to: "one/1",
       },
       {
-        from: new Uri("authority/some-abstract-interface"),
+        from: "authority/some-abstract-interface",
         to: {
           factory: () => ({} as Plugin),
           manifest: {
-            schema: {} as SchemaDocument,
+            schema: "",
             implemented: [new Uri("authority/some-abstract-interface")],
             imported: [],
           },
         },
       },
       {
-        from: new Uri("something/else"),
+        from: "something/else",
         to: {
           factory: () => ({} as Plugin),
           manifest: {
-            schema: {} as SchemaDocument,
+            schema: "",
             implemented: [new Uri("authority/some-abstract-interface")],
             imported: [new Uri("something/else-2")],
           },
@@ -39,15 +39,15 @@ describe("getImplementations", () => {
 
     const others: UriRedirect[] = [
       {
-        from: new Uri("some-other/other"),
-        to: new Uri("other/other"),
+        from: "some-other/other",
+        to: "other/other",
       },
       {
-        from: new Uri("some-other/other1"),
+        from: "some-other/other1",
         to: {
           factory: () => ({} as Plugin),
           manifest: {
-            schema: {} as SchemaDocument,
+            schema: "",
             implemented: [],
             imported: [],
           },
@@ -60,9 +60,13 @@ describe("getImplementations", () => {
       [...implementations, ...others]
     );
 
-    const values = implementations.map((item) =>
-      Uri.isUri(item.to) ? item.to : item.from
-    );
+    const values = implementations.map((item) => {
+      if (typeof item.to === "string") {
+        return new Uri(item.to);
+      } else {
+        return new Uri(item.from);
+      }
+    });
     expect(result).toMatchObject(values);
   });
 });

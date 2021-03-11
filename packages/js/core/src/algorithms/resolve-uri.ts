@@ -52,8 +52,17 @@ export async function resolveUri(
     }
 
     // Determine what type of comparison to use
-    const tryRedirect = (testUri: Uri): Uri | PluginPackage =>
-      Uri.equals(testUri, from) ? redirect.to : testUri;
+    const tryRedirect = (testUri: Uri): Uri | PluginPackage => {
+      if (Uri.equals(testUri, new Uri(from))) {
+        if (typeof redirect.to === "string") {
+          return new Uri(redirect.to);
+        } else {
+          return redirect.to;
+        }
+      } else {
+        return testUri;
+      }
+    };
 
     const uriOrPlugin = tryRedirect(resolvedUri);
 

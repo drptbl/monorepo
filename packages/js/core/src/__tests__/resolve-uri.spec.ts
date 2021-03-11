@@ -112,15 +112,15 @@ describe("resolveUri", () => {
 
   const redirects: UriRedirect[] = [
     {
-      from: new Uri("w3/api-resolver"),
-      to: new Uri("ens/ens"),
+      from: "w3/api-resolver",
+      to: "ens/ens",
     },
     {
-      from: new Uri("w3/api-resolver"),
-      to: new Uri("ens/ipfs"),
+      from: "w3/api-resolver",
+      to: "ens/ipfs",
     },
     {
-      from: new Uri("ens/my-plugin"),
+      from: "ens/my-plugin",
       to: {
         factory: () => ({} as Plugin),
         manifest: {
@@ -246,12 +246,12 @@ describe("resolveUri", () => {
     const circular: UriRedirect[] = [
       ...redirects,
       {
-        from: new Uri("some/api"),
-        to: new Uri("ens/api"),
+        from: "some/api",
+        to: "ens/api",
       },
       {
-        from: new Uri("ens/api"),
-        to: new Uri("some/api"),
+        from: "ens/api",
+        to: "some/api",
       },
     ];
 
@@ -272,12 +272,12 @@ describe("resolveUri", () => {
     const missingFromProperty: UriRedirect[] = [
       ...redirects,
       {
-        from: new Uri("some/api"),
-        to: new Uri("ens/api"),
+        from: "some/api",
+        to: "ens/api",
       },
       {
         from: null,
-        to: new Uri("another/api"),
+        to: "another/api",
       },
     ];
 
@@ -298,7 +298,7 @@ describe("resolveUri", () => {
     const uriToPlugin: UriRedirect[] = [
       ...redirects,
       {
-        from: new Uri("some/api"),
+        from: "some/api",
         to: {
           factory: () => ({} as Plugin),
           manifest: {
