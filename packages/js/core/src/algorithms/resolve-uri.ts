@@ -6,7 +6,10 @@ import { getImplementations } from "./get-implementations";
 export async function resolveUri(
   uri: Uri,
   client: Client,
-  createPluginApi: (uri: Uri, plugin: PluginPackage) => Api,
+  createPluginApi: (
+    uri: Uri,
+    plugin: PluginPackage<Record<string, unknown>>
+  ) => Api,
   createApi: (uri: Uri, manifest: Manifest, apiResolver: Uri) => Api,
   noValidate?: boolean
 ): Promise<Api> {
@@ -52,7 +55,7 @@ export async function resolveUri(
     }
 
     // Determine what type of comparison to use
-    const tryRedirect = (testUri: Uri): Uri | PluginPackage => {
+    const tryRedirect = (testUri: Uri): Uri | PluginPackage<unknown> => {
       if (Uri.equals(testUri, new Uri(from))) {
         if (typeof redirect.to === "string") {
           return new Uri(redirect.to);
