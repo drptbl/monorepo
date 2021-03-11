@@ -40,7 +40,7 @@
     "web-worker": "1.0.0"
   },
   "devDependencies": {
-    "@synthetixio/synpress": "^0.7.2",
+    "@synthetixio/synpress": "0.7.10",
     "@types/jest": "26.0.8",
     "@types/js-yaml": "3.11.1",
     "@types/semver": "^7.3.4",
