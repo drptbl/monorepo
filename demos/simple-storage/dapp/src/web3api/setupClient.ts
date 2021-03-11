@@ -11,21 +11,21 @@ export async function setupWeb3ApiClient(): Promise<Web3ApiClient> {
 
   const redirects: UriRedirect[] = [
     {
-      from: new Uri("w3://ens/ethereum.web3api.eth"),
+      from: "w3://ens/ethereum.web3api.eth",
       to: {
         factory: () => new EthereumPlugin({ provider: ethereum }),
         manifest: EthereumPlugin.manifest()
       }
     },
     {
-      from: new Uri("w3://ens/ipfs.web3api.eth"),
+      from: "w3://ens/ipfs.web3api.eth",
       to: {
         factory: () => new IpfsPlugin({ provider: 'https://ipfs.io' }),
         manifest: IpfsPlugin.manifest()
       }
     },
     {
-      from: new Uri("w3://ens/ens.web3api.eth"),
+      from: "w3://ens/ens.web3api.eth",
       to: {
         factory: () => new EnsPlugin({ }),
         manifest: EnsPlugin.manifest()

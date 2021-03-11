@@ -32,7 +32,7 @@ export class SchemaComposer {
 
     if (ensAddress) {
       redirects.push({
-        from: new Uri("w3://ens/ens.web3api.eth"),
+        from: "w3://ens/ens.web3api.eth",
         to: {
           factory: () => new EnsPlugin({ address: ensAddress }),
           manifest: EnsPlugin.manifest(),
@@ -42,7 +42,7 @@ export class SchemaComposer {
 
     if (ethProvider) {
       redirects.push({
-        from: new Uri("w3://ens/ethereum.web3api.eth"),
+        from: "w3://ens/ethereum.web3api.eth",
         to: {
           factory: () => new EthereumPlugin({ provider: ethProvider }),
           manifest: EthereumPlugin.manifest(),
@@ -52,7 +52,7 @@ export class SchemaComposer {
 
     if (ipfsProvider) {
       redirects.push({
-        from: new Uri("w3://ens/ipfs.web3api.eth"),
+        from: "w3://ens/ipfs.web3api.eth",
         to: {
           factory: () => new IpfsPlugin({ provider: ipfsProvider }),
           manifest: IpfsPlugin.manifest(),

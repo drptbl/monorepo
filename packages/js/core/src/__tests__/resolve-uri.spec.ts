@@ -10,7 +10,6 @@ import {
   PluginPackage,
   QueryApiOptions,
   QueryApiResult,
-  SchemaDocument,
   Uri,
   UriRedirect,
   resolveUri,
@@ -276,7 +275,7 @@ describe("resolveUri", () => {
         to: "ens/api",
       },
       {
-        from: null,
+        from: null as unknown as string,
         to: "another/api",
       },
     ];

@@ -67,21 +67,21 @@ export default {
     // maybe have it exported from test-env.
     const redirects: UriRedirect[] = [
       {
-        from: new Uri("w3://ens/ethereum.web3api.eth"),
+        from: "w3://ens/ethereum.web3api.eth",
         to: {
           factory: () => new EthereumPlugin({ provider: ethereum }),
           manifest: EthereumPlugin.manifest(),
         },
       },
       {
-        from: new Uri("w3://ens/ipfs.web3api.eth"),
+        from: "w3://ens/ipfs.web3api.eth",
         to: {
           factory: () => new IpfsPlugin({ provider: ipfs }),
           manifest: IpfsPlugin.manifest(),
         },
       },
       {
-        from: new Uri("w3://ens/ens.web3api.eth"),
+        from: "w3://ens/ens.web3api.eth",
         to: {
           factory: () => new EnsPlugin({ address: ensAddress }),
           manifest: EnsPlugin.manifest(),
