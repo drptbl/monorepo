@@ -14,7 +14,10 @@ import { decode } from "@msgpack/msgpack";
 export class PluginWeb3Api extends Api {
   private _instance: Plugin | undefined;
 
-  constructor(private _uri: Uri, private _plugin: PluginPackage) {
+  constructor(
+    private _uri: Uri,
+    private _plugin: PluginPackage<Record<string, unknown>>
+  ) {
     super();
   }
 
@@ -90,6 +93,6 @@ export class PluginWeb3Api extends Api {
   }
 
   private getInstance(): Plugin {
-    return this._instance || this._plugin.factory();
+    return this._instance || this._plugin.factory({});
   }
 }
