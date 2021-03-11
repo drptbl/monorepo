@@ -32,24 +32,28 @@ export class Web3ApiClient implements Client {
   private _apiCache: ApiCache = new Map<string, Api>();
 
   private _logger: Tracer;
-  private _span: Span;
 
   constructor(
     private _config: ClientConfig = {
       redirects: [],
     },
-    private _showLogging: boolean = false
+    private _showLogging: boolean = false,
+    private _rootSpan: Span | null = null
   ) {
     const { redirects } = this._config;
+    let span: Span;
 
     // Add all default redirects (IPFS, ETH, ENS)
     redirects.push(...getDefaultRedirects());
 
     if (this._showLogging) {
       this._logger = initTracer("web3api-client");
-      this._span = this._logger.startSpan("Web3ApiClient");
+      span = this._logger.startSpan("constructor", {
+        childOf: this._rootSpan ? this._rootSpan.context() : undefined,
+      });
 
-      this._span.log({ event: "created" });
+      span.log({ event: "created", config: this._config });
+      span.finish();
     }
   }
 
@@ -61,8 +65,16 @@ export class Web3ApiClient implements Client {
     TData extends Record<string, unknown> = Record<string, unknown>,
     TVariables extends Record<string, unknown> = Record<string, unknown>
   >(options: QueryApiOptions<TVariables>): Promise<QueryApiResult<TData>> {
+    let span: Span | null = null;
+
     try {
       const { uri, query, variables } = options;
+
+      if (this._showLogging) {
+        span = this._logger.startSpan("query");
+
+        span.log({ event: "query", options });
+      }
 
       // Convert the query string into a query document
       const queryDocument =
@@ -92,6 +104,8 @@ export class Web3ApiClient implements Client {
       // Await the invocations
       const invocations = await Promise.all(parallelInvocations);
 
+      this._showLogging && span!.log({ event: "invocations", invocations });
+
       // Aggregate all invocation results
       let methods: string[] = [];
       const resultDatas: unknown[] = [];
@@ -119,6 +133,8 @@ export class Web3ApiClient implements Client {
 
       methods = makeRepeatedUnique(methods);
 
+      this._showLogging && span!.log({ event: "methods", methods });
+
       // Build are data map, where each method maps to its data
       const data: Record<string, unknown> = {};
 
@@ -126,33 +142,67 @@ export class Web3ApiClient implements Client {
         data[methods[i]] = resultDatas[i];
       }
 
+      this._showLogging && span!.log({ event: "data", data });
+
       return {
         data: data as TData,
         errors: errors.length === 0 ? undefined : errors,
       };
     } catch (error) {
+      this._showLogging && span!.log({ event: "error", error });
+
       if (error.length) {
         return { errors: error };
       } else {
         return { errors: [error] };
       }
+    } finally {
+      this._showLogging && span!.finish();
     }
   }
 
   public async invoke<TData = unknown>(
     options: InvokeApiOptions
   ): Promise<InvokeApiResult<TData>> {
+    let span: Span | null = null;
+
     try {
       const { uri } = options;
-      const api = await this.loadWeb3Api(uri);
+
+      if (this._showLogging) {
+        span = this._logger.startSpan("invoke");
+
+        span.log({ event: "invoke", options });
+      }
+
+      const api = await this.loadWeb3Api(uri, span);
+
+      this._showLogging && span!.log({ event: "load-web3api", api });
+
       return (await api.invoke(options, this)) as TData;
     } catch (error) {
+      this._showLogging && span!.log({ event: "error", error });
+
       return { error: error };
+    } finally {
+      this._showLogging && span!.finish();
     }
   }
 
-  public async loadWeb3Api(uri: Uri): Promise<Api> {
+  public async loadWeb3Api(
+    uri: Uri,
+    rootSpan: Span | null = null
+  ): Promise<Api> {
     let api = this._apiCache.get(uri.uri);
+    let span: Span | null = null;
+
+    if (this._showLogging) {
+      span = this._logger.startSpan("load-web3api", {
+        childOf: rootSpan ? rootSpan.context() : undefined,
+      });
+
+      span.log({ event: "load-web3api", uri });
+    }
 
     if (!api) {
       api = await resolveUri(
@@ -163,12 +213,16 @@ export class Web3ApiClient implements Client {
           new WasmWeb3Api(uri, manifest, apiResolver)
       );
 
+      this._showLogging && span!.log({ event: "resolve-uri", api });
+
       if (!api) {
         throw Error(`Unable to resolve Web3API at uri: ${uri}`);
       }
 
       this._apiCache.set(uri.uri, api);
     }
+
+    this._showLogging && span!.finish();
 
     return api;
   }
