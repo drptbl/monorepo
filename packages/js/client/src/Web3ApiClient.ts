@@ -146,7 +146,8 @@ export class Web3ApiClient implements Client {
       api = await resolveUri(
         uri,
         this,
-        (uri: Uri, plugin: PluginPackage) => new PluginWeb3Api(uri, plugin),
+        (uri: Uri, plugin: PluginPackage<Record<string, unknown>>) =>
+          new PluginWeb3Api(uri, plugin),
         (uri: Uri, manifest: Manifest, apiResolver: Uri) =>
           new WasmWeb3Api(uri, manifest, apiResolver)
       );
