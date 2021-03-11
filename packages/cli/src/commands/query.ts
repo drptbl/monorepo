@@ -8,9 +8,9 @@ import { GluegunToolbox } from "gluegun";
 import gql from "graphql-tag";
 import path from "path";
 import { Uri, UriRedirect, Web3ApiClient } from "@web3api/client-js";
-import { EnsPlugin } from "@web3api/ens-plugin-js";
-import { EthereumPlugin } from "@web3api/ethereum-plugin-js";
-import { IpfsPlugin } from "@web3api/ipfs-plugin-js";
+import { ensPlugin } from "@web3api/ens-plugin-js";
+import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
+import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const HELP = `
@@ -68,24 +68,15 @@ export default {
     const redirects: UriRedirect[] = [
       {
         from: "w3://ens/ethereum.web3api.eth",
-        to: {
-          factory: () => new EthereumPlugin({ provider: ethereum }),
-          manifest: EthereumPlugin.manifest(),
-        },
+        to: ethereumPlugin({ provider: ethereum }),
       },
       {
         from: "w3://ens/ipfs.web3api.eth",
-        to: {
-          factory: () => new IpfsPlugin({ provider: ipfs }),
-          manifest: IpfsPlugin.manifest(),
-        },
+        to: ipfsPlugin({ provider: ipfs }),
       },
       {
         from: "w3://ens/ens.web3api.eth",
-        to: {
-          factory: () => new EnsPlugin({ address: ensAddress }),
-          manifest: EnsPlugin.manifest(),
-        },
+        to: ensPlugin({ address: ensAddress }),
       },
     ];
 

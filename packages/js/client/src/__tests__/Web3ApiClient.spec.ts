@@ -5,9 +5,9 @@ import {
   testEnvDown
 } from "./helpers";
 
-import { EthereumPlugin } from "@web3api/ethereum-plugin-js";
-import { IpfsPlugin } from "@web3api/ipfs-plugin-js";
-import { EnsPlugin } from "@web3api/ens-plugin-js";
+import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
+import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
+import { ensPlugin } from "@web3api/ens-plugin-js";
 import { GetPathToTestApis } from "@web3api/test-cases";
 import axios from "axios";
 
@@ -43,24 +43,15 @@ describe("Web3ApiClient", () => {
     redirects = [
       {
         from: "w3://ens/ethereum.web3api.eth",
-        to: {
-          factory: () => new EthereumPlugin({ provider: ethereum }),
-          manifest: EthereumPlugin.manifest(),
-        },
+        to: ethereumPlugin({ provider: ethereum }),
       },
       {
         from: "w3://ens/ipfs.web3api.eth",
-        to: {
-          factory: () => new IpfsPlugin({ provider: ipfs }),
-          manifest: IpfsPlugin.manifest(),
-        },
+        to: ipfsPlugin({ provider: ipfs }),
       },
       {
         from: "w3://ens/ens.web3api.eth",
-        to: {
-          factory: () => new EnsPlugin({ address: ensAddress }),
-          manifest: EnsPlugin.manifest(),
-        },
+        to: ensPlugin({ address: ensAddress }),
       },
     ];
   }, 50000);
